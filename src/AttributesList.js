@@ -3,6 +3,7 @@ import React from "react";
 const AttributesList = ({
     attributes,
     handleAttrVals,
+    attributeMods,
 }) => {
     return (
         <div>
@@ -11,6 +12,7 @@ const AttributesList = ({
                 return (
                     <div key={i} className="attribute">
                         <h4>{attr}</h4>
+                        <div> Mod: {attributeMods[attr]}</div>
                         <div className="attribute buttons">
                             <p>{attributes[attr]}</p>
                             <button onClick={() => { handleAttrVals(attr, '+') }}>+</button>

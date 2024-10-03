@@ -7,6 +7,9 @@ import ClassesList from "./ClassesList.js"
 
 function App() {
     const [attrVals, setAttrVals] = useState(setInitAttrVals(10));
+    const [attrMods, setAttrMods] = useState(
+        setInitAttrVals(0)
+    );
     const [classesAvailable, setCLassAvailable] = useState([]);
     const [selectedClass, setSelectedClass] = useState("");
     const maxStats = 70;
@@ -66,6 +69,12 @@ function App() {
                 setCLassAvailable(newClassesAvailable);
             }
         }
+
+        //change attr mods
+        let newMods = attrMods;
+        ATTRIBUTE_LIST.forEach((attr) => {
+            newMods[attr] = Math.floor((attrVals[attr] - 10) / 2)
+        });
     }
 
     return (
@@ -74,7 +83,11 @@ function App() {
                 <h1>Character Sheet</h1>
             </header>
             <section className="App-section">
-                <AttributesList attributes={attrVals} handleAttrVals={handleAttrVals} />
+                <AttributesList
+                    attributes={attrVals}
+                    handleAttrVals={handleAttrVals}
+                    attributeMods={attrMods}
+                />
                 <ClassesList
                     classesAvailable={classesAvailable}
                     selectedClass={selectedClass}

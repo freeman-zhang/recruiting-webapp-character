@@ -3,9 +3,12 @@ import './App.css';
 import { ATTRIBUTE_LIST, CLASS_LIST, SKILL_LIST } from './consts.js';
 
 import AttributesList from "./AttributesList.js";
+import ClassesList from "./ClassesList.js"
 
 function App() {
     const [attrVals, setAttrVals] = useState(setInitAttrVals(10));
+    const [classesAvailable, setCLassAvailable] = useState([]);
+    const [selectedClass, setSelectedClass] = useState("");
 
     function setInitAttrVals(initialValue) {
         var initialObj = {};
@@ -15,7 +18,7 @@ function App() {
     }
 
     function handleAttrVals(attr, type) {
-        if (type == '+') {
+        if (type === '+') {
             setAttrVals({
                 ...attrVals,
                 [attr]: (attrVals[attr] += 1),
@@ -30,6 +33,32 @@ function App() {
                 [attr]: (attrVals[attr] -= 1),
             });
         }
+
+        //check classes available
+        for (let className in CLASS_LIST) {
+            let requiredAttr = 0;
+
+            // Count attributes reqs
+            for (let attr in CLASS_LIST[className]) {
+                if (attrVals[attr] >= CLASS_LIST[className][attr]) {
+                    requiredAttr += 1;
+                }
+            }
+
+            // Update classesAvailable state with classes that meet reqs
+            let newClassesAvailable = classesAvailable;
+            if (requiredAttr === 6 && !classesAvailable.includes(className)) {
+                newClassesAvailable.push(className);
+                setCLassAvailable(newClassesAvailable);
+                // Remove from classesAvailable if no longer meets reqs
+            } else if (
+                requiredAttr < 6 &&
+                classesAvailable.includes(className)
+            ) {
+                newClassesAvailable = classesAvailable.filter((c) => c != className);
+                setCLassAvailable(newClassesAvailable);
+            }
+        }
     }
 
     return (
@@ -39,6 +68,11 @@ function App() {
             </header>
             <section className="App-section">
                 <AttributesList attributes={attrVals} handleAttrVals={handleAttrVals} />
+                <ClassesList
+                    classesAvailable={classesAvailable}
+                    selectedClass={selectedClass}
+                    setSelectedClass={setSelectedClass}
+                />
             </section>
         </div>
     );

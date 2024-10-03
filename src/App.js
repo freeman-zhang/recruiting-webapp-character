@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { ATTRIBUTE_LIST, CLASS_LIST, SKILL_LIST } from './consts.js';
 
@@ -10,10 +10,41 @@ function App() {
     const [attrMods, setAttrMods] = useState(
         setInitAttrVals(0)
     );
-    const [classesAvailable, setCLassAvailable] = useState([]);
+    const [classesAvailable, setClassAvailable] = useState([]);
     const [selectedClass, setSelectedClass] = useState("");
     const maxStats = 70;
 
+    // Retrive data from API on first load
+    useEffect(() => {
+        fetch(
+            "https://recruiting.verylongdomaintotestwith.ca/api/{freeman-zhang}/character"
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                setAttrVals(data.body.attrVals);
+                setAttrMods(data.body.attrMods);
+                setClassAvailable(data.body.classesAvailable);
+            });
+    }, []);
+
+    function handleSave(e) {
+        e.preventDefault();
+        let data = {
+            attrVals,
+            attrMods,
+            classesAvailable,
+        };
+        fetch(
+            "https://recruiting.verylongdomaintotestwith.ca/api/{freeman-zhang}/character",
+            {
+                method: "post",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            }
+        );
+    }
+
+    //init function for attribute vals (and attribute mod)
     function setInitAttrVals(initialValue) {
         var initialObj = {};
         return ATTRIBUTE_LIST.reduce((obj, curr) => {
@@ -59,14 +90,14 @@ function App() {
             let newClassesAvailable = classesAvailable;
             if (requiredAttr === 6 && !classesAvailable.includes(className)) {
                 newClassesAvailable.push(className);
-                setCLassAvailable(newClassesAvailable);
+                setClassAvailable(newClassesAvailable);
                 // Remove from classesAvailable if no longer meets reqs
             } else if (
                 requiredAttr < 6 &&
                 classesAvailable.includes(className)
             ) {
                 newClassesAvailable = classesAvailable.filter((c) => c != className);
-                setCLassAvailable(newClassesAvailable);
+                setClassAvailable(newClassesAvailable);
             }
         }
 
@@ -82,6 +113,9 @@ function App() {
             <header className="App-header">
                 <h1>Character Sheet</h1>
             </header>
+            <div>
+                <button onClick={(e) => { handleSave(e); }} className="save-button">Save</button>
+            </div>
             <section className="App-section">
                 <AttributesList
                     attributes={attrVals}

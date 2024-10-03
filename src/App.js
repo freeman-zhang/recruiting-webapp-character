@@ -9,6 +9,7 @@ function App() {
     const [attrVals, setAttrVals] = useState(setInitAttrVals(10));
     const [classesAvailable, setCLassAvailable] = useState([]);
     const [selectedClass, setSelectedClass] = useState("");
+    const maxStats = 70;
 
     function setInitAttrVals(initialValue) {
         var initialObj = {};
@@ -18,7 +19,13 @@ function App() {
     }
 
     function handleAttrVals(attr, type) {
+        const totalStats = Object.values(attrVals).reduce((curTotal, cur) => {
+            return curTotal + cur;
+        }, 0);
         if (type === '+') {
+            if (totalStats >= maxStats) {
+                return;
+            }
             setAttrVals({
                 ...attrVals,
                 [attr]: (attrVals[attr] += 1),
